@@ -1,28 +1,17 @@
-FROM ubuntu:latest
+FROM nvcr.io/nvidia/l4t-base:r36.2.0
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         python3-pip \
-		python3-dev \
-		python3-matplotlib \
-		build-essential \
-		gfortran \
-		git \
-		cmake \
-		curl \
-		libopenblas-dev \
-		liblapack-dev \
-		libblas-dev \
-		libhdf5-serial-dev \
-		hdf5-tools \
-		libhdf5-dev \
-		zlib1g-dev \
-		zip \
-		libjpeg8-dev \
-		libopenmpi3 \
-		openmpi-bin \
-		openmpi-common \
-		protobuf-compiler \
-		libprotoc-dev \
+	&& rm -rf /var/lib/apt/lists/* \
+	&& apt-get clean
 
-RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+RUN pip install --no-cache-dir --verbose jupyter jupyterlab && \
+	pip install --no-cache-dir --verbose jupyterlab_widgets	
+
+RUN jupyter lab --generate-config
+
+CMD /bin/bash -c "jupyter lab --ip 0.0.0.0 --port 8888 --allow-root &> /var/log/jupyter.log" & \
+	echo "allow 10 sec for JupyterLab to start @ http://$(hostname -I | cut -d' ' -f1):8888 (password nvidia)" && \
+	echo "JupterLab logging location:  /var/log/jupyter.log  (inside the container)" && \
+	/bin/bash
