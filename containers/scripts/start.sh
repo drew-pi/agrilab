@@ -23,9 +23,10 @@ else
 fi
 
 echo "Starting new container..."
-sudo docker run --name $CONTAINER --network=host \
+sudo docker run -d --name $CONTAINER --network=host \
     -v $ROOT/notebooks:/home/persephone/notebooks \
     -v $ROOT/.jupyter_logs/logs:/home/persephone/logs \
     $CONTAINER
 
 echo "Container started"
+echo $(sudo docker logs --tail=2 jetson_jupyter)
