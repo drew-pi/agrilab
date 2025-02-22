@@ -28,8 +28,8 @@ RUN jupyter lab --generate-config
 EXPOSE 8888
 
 CMD bash -c 'echo "allow 10 sec for JupyterLab to start @ http://$(hostname -I | cut -d" " -f1):8888 (no password)"; \
-              echo "JupyterLab logging location: /home/jupyteruser/logs/jupyter.log"; \
-              jupyter lab --ip=0.0.0.0 --port=8888 --NotebookApp.token="" --NotebookApp.password="" --no-browser &> /home/jupyteruser/logs/jupyter.log'
+              echo "JupyterLab logging location: /home/persephone/logs/jupyter.log"; \
+              jupyter lab --ip=0.0.0.0 --port=8888 --NotebookApp.token="" --NotebookApp.password="" --no-browser &> /home/persephone/logs/jupyter.log'
 
 
 # CMD /bin/bash -c "jupyter lab --ip 0.0.0.0 --port 8888 --NotebookApp.token='' --NotebookApp.password='' --no-browser &> /home/persephone/logs/jupyter.log" & \
