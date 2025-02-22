@@ -15,7 +15,7 @@ RUN pip install --no-cache-dir --verbose jupyter jupyterlab && \
 RUN useradd -m -s /bin/bash persephone 
 
 RUN mkdir -p /home/persephone/.jupyter && \
-	mkdir -p /home/persephone/logs && \
+	# mkdir -p /home/persephone/logs && \
 	# touch /home/persephone/logs/jupyter.log && \
     chown -R persephone:persephone /home/persephone
 
