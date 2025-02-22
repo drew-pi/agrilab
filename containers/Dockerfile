@@ -27,10 +27,15 @@ RUN jupyter lab --generate-config
 
 EXPOSE 8888
 
-CMD /bin/bash -c "jupyter lab --ip 0.0.0.0 --port 8888 --NotebookApp.token='' --NotebookApp.password='' --no-browser &> /home/persephone/logs/jupyter.log" & \
-	echo "allow 10 sec for JupyterLab to start @ http://$(hostname -I | cut -d' ' -f1):8888 (no password)" && \
-	echo "JupterLab logging location:  /home/jupyteruser/logs/jupyter.log  (inside the container)" && \
-	/bin/bash
+CMD bash -c 'echo "allow 10 sec for JupyterLab to start @ http://$(hostname -I | cut -d" " -f1):8888 (no password)"; \
+              echo "JupyterLab logging location: /home/jupyteruser/logs/jupyter.log"; \
+              jupyter lab --ip=0.0.0.0 --port=8888 --NotebookApp.token="" --NotebookApp.password="" --no-browser &> /home/jupyteruser/logs/jupyter.log'
+
+
+# CMD /bin/bash -c "jupyter lab --ip 0.0.0.0 --port 8888 --NotebookApp.token='' --NotebookApp.password='' --no-browser &> /home/persephone/logs/jupyter.log" & \
+# 	echo "allow 10 sec for JupyterLab to start @ http://$(hostname -I | cut -d' ' -f1):8888 (no password)" && \
+# 	echo "JupterLab logging location:  /home/jupyteruser/logs/jupyter.log  (inside the container)" && \
+# 	/bin/bash
 
 # CMD /bin/bash -c "jupyter lab --ip 0.0.0.0 --port 8888 --NotebookApp.token='' --NotebookApp.password='' --allow-root &> /var/log/jupyter.log" & \
 # 	echo "allow 10 sec for JupyterLab to start @ http://$(hostname -I | cut -d' ' -f1):8888 (no password)" && \

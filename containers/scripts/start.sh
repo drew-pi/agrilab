@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# exit if error occurs
+set -e
+
 DOCKERFILE="../Dockerfile"
 CONTAINER="jetson_jupyter"
 
@@ -7,7 +10,7 @@ CONTAINER="jetson_jupyter"
 ./build.sh $CONTAINER $DOCKERFILE
 
 # check to see if already existing version
-if [ "$(docker ps -aq -f name=$CONTAINER)" ]; then
+if [ "$(sudo docker ps -aq -f name=$CONTAINER)" ]; then
     echo "Removing existing container..."
     sudo docker stop $CONTAINER
     sudo docker rm $CONTAINER
@@ -20,9 +23,9 @@ else
 fi
 
 echo "Starting new container..."
-sudo docker run -d --name $CONTAINER --network=host \
+sudo docker run --name $CONTAINER --network=host \
     -v $ROOT/notebooks:/home/jupyteruser/notebooks \
     -v $ROOT/.jupyter_logs/logs:/home/jupyteruser/logs \
-    $IMAGE_NAME
+    $CONTAINER
 
 echo "Container started"
