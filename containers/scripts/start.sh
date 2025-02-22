@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DOCKERFILE="Dockerfile"
+DOCKERFILE="../Dockerfile"
 CONTAINER="jetson_jupyter"
 
 # build the container
