@@ -17,6 +17,17 @@ To build and run the container
 The jupyter lab will be accessible at the IP address on your terminal screen 
 
 
+### Stopping and Removing a container
+
+To stop an active container (it is running in detached mode so it will always be running in the background automatically), use 
+```
+sudo docker stop jetson_jupyter
+```
+
+To remove the container (this will delete all of the containers contents, so be careful), run
+```
+sudo docker rm jetson_jupyter
+```
 
 
 ### Resources 
