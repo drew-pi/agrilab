@@ -18,6 +18,10 @@ RUN mkdir -p /home/persephone/.jupyter /home/persephone/logs && \
 	touch /home/persephone/logs/jupyter.log && \
     chown -R persephone:persephone /home/persephone
 
+# Create notebook folder and set owndership to new user
+RUN mkdir -p /home/persephone/notebooks \
+    && chown -R persephone:persephone /home/persephone/notebooks
+
 # switch to new user
 USER persephone
 WORKDIR /home/persephone
