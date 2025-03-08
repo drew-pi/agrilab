@@ -21,7 +21,7 @@ fi
 
 echo "Starting new container..."
 sudo docker run -it -d --name $NAME --network=host --runtime=nvidia \
-    -v $ROOT/notebooks:/root/notebooks \
+    -v $ROOT/workspaces:/root/workspaces \
     $IMAGE
 
 echo "Container started"
