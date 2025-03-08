@@ -59,9 +59,19 @@ Can also "enter" a container environment that is built on top of some linux dist
 sudo docker exec <container name/id>
 ```
 
+### Copy file from Unix like OS (only works for mac + linux) to Jetson
+
+Run the following command
+```
+scp /path/to/file jet@<ip>:/path/to/destination
+```
+Where **/path/to/file** is the file location on your local machine (can use the command ```pwd``` to check the path to a file)
+
+And **/path/to/destination** is where you want the file to be placed
 
 
-### Resources 
+
+# Resources 
 
 A [random branch](https://github.com/dusty-nv/jetson-containers/blob/bc8d0264ef25aa0d1d25a54e4658f491d2fa130f/Dockerfile.ml) that we are modelling our docker files on.
 
