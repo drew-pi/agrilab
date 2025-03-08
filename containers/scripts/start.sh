@@ -23,8 +23,8 @@ else
 fi
 
 echo "Starting new container..."
-sudo docker run -d --name $CONTAINER --network=host \
-    -v $ROOT/notebooks:/home/persephone/notebooks \
+sudo docker run -d --name $CONTAINER --network=host --runtime=nvidia \
+    -v $ROOT/notebooks:/root/notebooks \
     $CONTAINER
 
 echo "Container started"
