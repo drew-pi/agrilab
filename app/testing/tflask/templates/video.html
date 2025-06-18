@@ -1,0 +1,50 @@
+<html>
+  <head>
+    <title>Video Player</title>
+  </head>
+
+  <body>
+    <div>
+      <p>Hello Again, World!</p>
+
+      <video id="video-player" autoplay playsinline muted>
+        Your browser does not support video
+      </video>
+    </div>
+
+    <script>
+      const wsUrl = `wss://{{ jetson_host }}:{{ jetson_port }}/output`;
+      console.log(wsUrl);
+      const video = document.getElementById("video-player");
+      const peer = new RTCPeerConnection({
+        iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
+      });
+
+      peer.ontrack = (e) => {
+        video.srcObject = e.streams[0];
+        video.play();
+      };
+
+      peer.onicecandidate = (e) => {
+        if (e.candidate)
+          socket.send(JSON.stringify({ type: "ice", data: e.candidate }));
+      };
+
+      const socket = new WebSocket(wsUrl);
+
+      socket.onmessage = async (e) => {
+        const msg = JSON.parse(e.data);
+        if (msg.type === "sdp") {
+          await peer.setRemoteDescription(new RTCSessionDescription(msg.data));
+          const answer = await peer.createAnswer();
+          await peer.setLocalDescription(answer);
+          socket.send(
+            JSON.stringify({ type: "sdp", data: peer.localDescription })
+          );
+        } else if (msg.type === "ice") {
+          await peer.addIceCandidate(new RTCIceCandidate(msg.data));
+        }
+      };
+    </script>
+  </body>
+</html>
