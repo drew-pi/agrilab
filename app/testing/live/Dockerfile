@@ -5,10 +5,11 @@ RUN apt-get update && \
     apt-get install -y nginx libnginx-mod-rtmp && \
     apt-get clean
 
-# Install Flask
-RUN pip install flask
+# install python libs
+COPY requirements.txt requirements.txt
+RUN pip install -r requirements.txt
 
-# Copy files
+# Copy rest of files
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY start.sh /start.sh
 COPY app.py /app.py
@@ -26,8 +27,8 @@ EXPOSE 8080
 # flask service
 EXPOSE 5000
 
-# make start.sh executable
-RUN chmod +x start.sh
+# start nginx
+RUN nginx
 
-# Start script
-CMD ["bash", "/start.sh"]
+# start flask app
+CMD ["python3 /app.py"]

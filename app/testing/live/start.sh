@@ -2,8 +2,10 @@
 
 set -e
 
-# Start nginx in background
-nginx
+CONTAINER_NAME=live
 
-# Start Flask
-python3 /app.py
+sudo docker build -t $CONTAINER_NAME .
+
+sudo docker run --rm --name live-stack --network host \
+    -v $(pwd)/hls:/var/www/hls \
+    $CONTAINER_NAME
