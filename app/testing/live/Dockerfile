@@ -11,7 +11,6 @@ RUN pip install -r requirements.txt
 
 # Copy rest of files
 COPY nginx.conf /etc/nginx/nginx.conf
-COPY start.sh /start.sh
 COPY app.py /app.py
 COPY templates/ /templates/
 
@@ -19,7 +18,6 @@ COPY templates/ /templates/
 RUN mkdir -p /var/www/hls
 
 # Expose ports
-
 # rtmp ingest
 EXPOSE 1935
 # nginx http for hls
@@ -27,8 +25,8 @@ EXPOSE 8080
 # flask service
 EXPOSE 5000
 
-# start nginx
-RUN nginx
+# Copy and allow start script
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
 
-# start flask app
-CMD ["python3 /app.py"]
+CMD ["/start.sh"]
