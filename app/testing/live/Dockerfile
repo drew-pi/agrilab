@@ -13,6 +13,7 @@ RUN pip install -r requirements.txt
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY app.py /app.py
 COPY templates/ /templates/
+COPY .env /.env
 
 # Create HLS output directory
 RUN mkdir -p /var/www/hls
@@ -29,4 +30,5 @@ EXPOSE 5000
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
 
-CMD ["/start.sh"]
+# Start script
+CMD ["bash", "/start.sh"]
