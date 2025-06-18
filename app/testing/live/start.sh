@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # Start nginx in background
 nginx
 
