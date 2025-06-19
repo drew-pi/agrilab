@@ -28,13 +28,15 @@ sudo docker logs -n 20 -t $CONTAINER_NAME
 sleep 1
 echo "Starting camera feed"
 
-ffmpeg -re -f v4l2 -fflags +discardcorrupt \
-    -input_format mjpeg -video_size 1280x960 -framerate 5 \
-    -i /dev/video0 \
-    -vf "format=yuv420p,drawtext=fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf:
-       text='%{localtime}':x=10:y=10:fontsize=32:fontcolor=white:box=1:boxcolor=black@0.5" \
-    -c:v libx264 -preset ultrafast -tune zerolatency \
-    -g 1 -keyint_min 1 -sc_threshold 0 \
-    -f flv rtmp://10.49.26.98/live/stream \
-    -loglevel warning # for production so that doesn't cloud the screen
+bash scripts/record_cameraA.sh
+
+# ffmpeg -re -f v4l2 -fflags +discardcorrupt \
+#     -input_format mjpeg -video_size 1280x960 -framerate 5 \
+#     -i /dev/video0 \
+#     -vf "format=yuv420p,drawtext=fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf:
+#        text='%{localtime}':x=10:y=10:fontsize=32:fontcolor=white:box=1:boxcolor=black@0.5" \
+#     -c:v libx264 -preset ultrafast -tune zerolatency \
+#     -g 1 -keyint_min 1 -sc_threshold 0 \
+#     -f flv rtmp://10.49.26.98/live/stream \
+#     -loglevel warning # for production so that doesn't cloud the screen
 
