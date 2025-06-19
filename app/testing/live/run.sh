@@ -33,12 +33,12 @@ sudo docker logs -n 30 -t $CONTAINER_NAME
 sleep 1
 
 LOG_DIR=_logs
-DATA_DIR=_data
+export DATA_DIR=_data
 mkdir -p $LOG_DIR
 mkdir -p $DATA_DIR
 
 # how long each .mp4 archive file is (in seconds)
-SEGMENT_LEN=60
+export SEGMENT_LEN=60
 
 echo "Starting camera feed"
 
@@ -46,7 +46,7 @@ bash scripts/live_cameraA.sh > $LOG_DIR/live_cameraA.log 2>&1 &
 pid=$!
 echo "Started live camera feed A with pid $pid"
 
-bash scripts/record_cameraA.sh > $LOG_DIR/_cameraA.log 2>&1 &
+bash scripts/record_cameraA.sh > $LOG_DIR/record_cameraA.log 2>&1 &
 pid=$!
 echo "Started recording stream A with pid $pid"
 
