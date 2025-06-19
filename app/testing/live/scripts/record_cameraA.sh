@@ -4,13 +4,13 @@ source .env
 
 # get the current time
 now=$(date +%s)
-WAIT_TIME=$(($SEGMENT_LEN - $now % $SEGMENT_LEN))
+WAIT_TIME=$(( (SEGMENT_LEN - now % SEGMENT_LEN) % SEGMENT_LEN ))
 
 echo "Waiting for $WAIT_TIME seconds until next recording start"
 sleep $WAIT_TIME
 echo "Starting recording for streamA and storing in $DATA_DIR/" 
 
-# Run ffmpeg to record from the RTMP stream and split into hourly segments (at each hour exactly)
+# Run ffmpeg to record from the RTMP stream and split into segments of SEGMENT_LEN (at the end of a segment exactly)
 ffmpeg -f flv -i rtmp://$JETSON_IP/live/streamA \
     -c copy \
     -f segment \
@@ -18,7 +18,6 @@ ffmpeg -f flv -i rtmp://$JETSON_IP/live/streamA \
     -reset_timestamps 1 \
     -strftime 1 \
     -movflags +faststart \
-    -loglevel warning \
     "$DATA_DIR/%Y_%m_%d_T%H%M_A.mp4"
 
-
+#     -loglevel warning \

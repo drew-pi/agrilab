@@ -43,12 +43,14 @@ export SEGMENT_LEN=60
 echo "Starting camera feed"
 
 bash scripts/live_cameraA.sh > $LOG_DIR/live_cameraA.log 2>&1 &
-pid=$!
-echo "Started live camera feed A with pid $pid"
+live_pid=$!
+echo "Started live camera feed A with pid $live_pid"
+
+sleep 2
 
 bash scripts/record_cameraA.sh > $LOG_DIR/record_cameraA.log 2>&1 &
-pid=$!
-echo "Started recording stream A with pid $pid"
+rec_pid=$!
+echo "Started recording stream A with pid $rec_pid"
 
 
 

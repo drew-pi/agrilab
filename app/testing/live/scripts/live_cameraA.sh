@@ -17,9 +17,9 @@ ffmpeg -re -f v4l2 -fflags +discardcorrupt \
     -g 1 -keyint_min 1 -sc_threshold 0 \
     -force_key_frames "expr:gte(t,n_forced*${SEGMENT_LEN})" \
     -movflags +faststart \
-    -f flv rtmp://$JETSON_IP/live/streamA \
-    -loglevel warning
+    -f flv rtmp://$JETSON_IP/live/streamA
 
+#     -loglevel warning
 
 
 
