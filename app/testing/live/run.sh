@@ -28,7 +28,11 @@ sudo docker logs -n 20 -t $CONTAINER_NAME
 sleep 1
 echo "Starting camera feed"
 
-bash scripts/record_cameraA.sh
+mkdir -p _logs
+
+bash scripts/record_cameraA.sh > _logs/record_cameraA.log 2>&1 &
+pid=$!
+echo "Started live camera feed with process $pid"
 
 # ffmpeg -re -f v4l2 -fflags +discardcorrupt \
 #     -input_format mjpeg -video_size 1280x960 -framerate 5 \
