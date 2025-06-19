@@ -2,18 +2,23 @@
 
 source .env
 
-CAMERA_A=/dev/video0
+# get the current time
+now=$(date +%s)
+WAIT_TIME=$(($SEGMENT_LEN - $now % $SEGMENT_LEN))
 
-# other data
-FRAME_RATE=5
+echo "Waiting for $WAIT_TIME seconds until next recording start"
+sleep $WAIT_TIME
+echo "Starting recording for $STREAM" 
+
+# Run ffmpeg to record from the RTMP stream and split into hourly segments (at each hour exactly)
+ffmpeg -f flv -i rtmp://$JETSON_IP/live/streamA \
+    -c copy \
+    -f segment \
+    -segment_time $SEGMENT_LEN \
+    -reset_timestamps 1 \
+    -strftime 1 \
+    -movflags +faststart \
+    -loglevel warning \
+    "$DATA_DIR/%Y_%m_%d_T%H%M_A.mp4"
 
 
-ffmpeg -re -f v4l2 -fflags +discardcorrupt \
-    -input_format mjpeg -video_size 1280x960 -framerate $FRAME_RATE \
-    -i $CAMERA_A \
-    -vf "format=yuv420p,drawtext=fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf:
-       text='%{localtime}':x=10:y=10:fontsize=32:fontcolor=white:box=1:boxcolor=black@0.5" \
-    -c:v libx264 -preset ultrafast -tune zerolatency \
-    -g 1 -keyint_min 1 -sc_threshold 0 \
-    -f flv rtmp://$JETSON_IP/live/stream \
-    -loglevel warning # for production so that doesn't cloud the screen

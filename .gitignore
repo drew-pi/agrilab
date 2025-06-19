@@ -1,5 +1,6 @@
-# custom folders to ignore
+# custom folders to ignore (mostly because too much data)
 _log/
+_data/
 hls/
 
 
