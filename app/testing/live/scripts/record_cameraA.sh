@@ -8,7 +8,7 @@ WAIT_TIME=$(($SEGMENT_LEN - $now % $SEGMENT_LEN))
 
 echo "Waiting for $WAIT_TIME seconds until next recording start"
 sleep $WAIT_TIME
-echo "Starting recording for $STREAM" 
+echo "Starting recording for streamA and storing in $DATA_DIR/" 
 
 # Run ffmpeg to record from the RTMP stream and split into hourly segments (at each hour exactly)
 ffmpeg -f flv -i rtmp://$JETSON_IP/live/streamA \
