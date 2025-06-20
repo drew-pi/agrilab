@@ -17,7 +17,7 @@ while true; do
     sleep $WAIT_TIME
     echo "[INFO] Starting recording for streamA at $(date) and storing in $DATA_DIR/"
 
-    ffmpeg -f flv -i "rtmp://$JETSON_IP/live/streamA" \
+    ffmpeg -f flv -i "rtmp://$JETSON_IP/live/streamA live=1" \
            -rw_timeout 15000000 \
            -c copy \
            -f segment \
@@ -32,7 +32,6 @@ while true; do
     echo "[WARN] ffmpeg exited at $(date), restarting in 2 seconds..."
     sleep 2
 done
-
 
 
 

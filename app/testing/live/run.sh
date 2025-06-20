@@ -18,8 +18,24 @@ if [ "$(sudo docker ps -aq -f name=$CONTAINER_NAME)" ]; then
 fi
 
 echo "Removing all recording and live feed background processes"
+pids=$(ps -eo pid,cmd | grep "[b]ash scripts/" | awk '{print $1}')
+
+for pid in $pids; do
+    echo "Found script PID: $pid"
+    
+    # Print full command used to launch the script
+    cmd=$(ps -p "$pid" -o cmd=)
+    echo "The command was: $cmd"
+    
+    # Kill the script itself
+    kill "$pid"
+
+    echo "" 
+done
+
 # ps aux | grep [f]fmpeg
 pkill -x ffmpeg || true
+
 
 echo "Rebuilding $IMAGE_NAME"
 sudo docker build -t $IMAGE_NAME .
@@ -46,13 +62,13 @@ export SEGMENT_LEN=60
 
 echo "Starting camera feed"
 
-bash scripts/live_cameraA.sh > $LOG_DIR/live_cameraA.log 2>&1 &
+setsid bash scripts/live_cameraA.sh > "$LOG_DIR/live_cameraA.log" 2>&1 &
 live_pid=$!
 echo "Started background live process A with pid $live_pid"
 
 sleep 1
 
-bash scripts/record_cameraA.sh > $LOG_DIR/record_cameraA.log 2>&1 &
+setsid bash scripts/record_cameraA.sh > $LOG_DIR/record_cameraA.log 2>&1 &
 rec_pid=$!
 echo "Started background recording process A with pid $rec_pid"
 
