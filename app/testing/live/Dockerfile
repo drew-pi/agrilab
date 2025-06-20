@@ -2,7 +2,7 @@ FROM python:3.10-slim
 
 # Install nginx and RTMP module
 RUN apt-get update && \
-    apt-get install -y nginx libnginx-mod-rtmp && \
+    apt-get install -y nginx libnginx-mod-rtmp ffmpeg && \
     apt-get clean
 
 # install python libs

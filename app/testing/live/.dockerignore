@@ -1,0 +1,9 @@
+# makes sure that build context is not bloated
+_data/
+_logs/
+hls/
+*.mp4
+*.ts
+*.jpg
+*.png
+*.log
