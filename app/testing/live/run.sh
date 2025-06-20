@@ -2,6 +2,9 @@
 
 set -euo pipefail
 
+# error trap
+trap 'echo "[ERROR] Command failed at line $LINENO: $BASH_COMMAND" >&2' ERR
+
 IMAGE_NAME=live-poc
 CONTAINER_NAME=live
 
@@ -18,13 +21,13 @@ if [ "$(sudo docker ps -aq -f name=$CONTAINER_NAME)" ]; then
 fi
 
 echo "Removing all recording and live feed background processes"
-pids=$(ps -eo pid,cmd | grep "[b]ash scripts/" | awk '{print $1}')
+pids=$(ps -eo pid,cmd | grep "[b]ash scripts/" | awk '{print $1}') || true
 
 for pid in $pids; do
     echo "Found script PID: $pid"
     
     # Print full command used to launch the script
-    cmd=$(ps -p "$pid" -o cmd=)
+    cmd=$(ps -p "$pid" -o cmd=) || true
     echo "The command was: $cmd"
     
     # Kill the script itself
