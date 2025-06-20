@@ -46,6 +46,7 @@ sudo docker build -t $IMAGE_NAME .
 # start in detached mode
 sudo docker run --rm -d --name $CONTAINER_NAME --network host \
     -v $(pwd)/hls:/var/www/hls \
+    -v $(pwd)/_data:/recordings \
     $IMAGE_NAME
 
 echo "Waiting for $CONTAINER_NAME to start"
