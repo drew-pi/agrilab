@@ -5,6 +5,10 @@ set -e
 IMAGE_NAME=live-poc
 CONTAINER_NAME=live
 
+JETSON_IP=$(hostname -I | awk '{print $1}')
+echo "Current ip address is $JETSON_IP"
+echo "JETSON_IP=$JETSON_IP" > .env
+
 # check to see if already existing version
 if [ "$(sudo docker ps -aq -f name=$CONTAINER_NAME)" ]; then
     echo "Removing existing container..."
@@ -44,13 +48,13 @@ echo "Starting camera feed"
 
 bash scripts/live_cameraA.sh > $LOG_DIR/live_cameraA.log 2>&1 &
 live_pid=$!
-echo "Started live camera feed A with pid $live_pid"
+echo "Started background live process A with pid $live_pid"
 
-sleep 2
+sleep 1
 
 bash scripts/record_cameraA.sh > $LOG_DIR/record_cameraA.log 2>&1 &
 rec_pid=$!
-echo "Started recording stream A with pid $rec_pid"
+echo "Started background recording process A with pid $rec_pid"
 
 
 

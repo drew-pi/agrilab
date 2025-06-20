@@ -7,6 +7,8 @@ CAMERA_A=/dev/video0
 # other data
 FRAME_RATE=5
 
+echo "[INFO] beginning live cameraA feed"
+
 ffmpeg -re -f v4l2 -fflags +discardcorrupt \
     -input_format mjpeg -video_size 1280x960 -framerate $FRAME_RATE \
     -use_wallclock_as_timestamps 1 \
@@ -17,9 +19,10 @@ ffmpeg -re -f v4l2 -fflags +discardcorrupt \
     -g 1 -keyint_min 1 -sc_threshold 0 \
     -force_key_frames "expr:gte(t,n_forced*${SEGMENT_LEN})" \
     -movflags +faststart \
+    -loglevel warning \
     -f flv rtmp://$JETSON_IP/live/streamA
 
-#     -loglevel warning
+
 
 
 
