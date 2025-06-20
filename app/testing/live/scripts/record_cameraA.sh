@@ -13,6 +13,11 @@ echo "[INFO] Using data directory=$DATA_DIR"
 MIN_CUTOFF=$(( SEGMENT_LEN / 30 ))
 
 record_aligned_segments() {
+    now=$(date +%s)
+    WAIT_TIME=$(( (SEGMENT_LEN - now % SEGMENT_LEN) % SEGMENT_LEN ))
+    echo -e "\n[INFO] Starting aligned segmentation loop in $WAIT_TIME seconds\n"
+    sleep $WAIT_TIME
+
     echo -e "\n[INFO] Starting aligned segmentation loop at $(date)\n"
     ffmpeg -rw_timeout 15000000 \
         -f flv -i "rtmp://$JETSON_IP/live/streamA live=1" \
@@ -49,10 +54,7 @@ while true; do
         -movflags +faststart \
         "$DATA_DIR/$(date +%Y_%m_%d_T%H%M)_A.mp4"; then
 
-        now=$(date +%s)
-        WAIT_TIME=$(( (SEGMENT_LEN - now % SEGMENT_LEN) % SEGMENT_LEN ))
-        echo -e "\n[INFO] Short segment completed successfully. Proceeding to long term recorder in $WAIT_TIME seconds\n"
-        sleep $WAIT_TIME
+        echo -e "\n[INFO] Short segment completed successfully. Proceeding to long term recorder\n"
 
         record_aligned_segments
         continue
