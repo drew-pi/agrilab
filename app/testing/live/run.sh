@@ -21,7 +21,7 @@ if [ "$(sudo docker ps -aq -f name=$CONTAINER_NAME)" ]; then
 fi
 
 echo "Removing all recording and live feed background processes"
-pids=$(ps -eo pid,cmd | grep "[b]ash scripts/" | awk '{print $1}') || true
+pids=$(ps -eo pid,cmd | grep "[b]ash scripts/" | awk '{print $1}')
 
 for pid in $pids; do
     echo "Found script PID: $pid"
