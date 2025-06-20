@@ -1,6 +1,12 @@
 #!/bin/bash
 
+set -euo pipefail
+
 source .env
+
+echo "[INFO] Using segment length=$SEGMENT_LEN"
+echo "[INFO] Using jetson ip=$JETSON_IP"
+echo "[INFO] Using data directory=$DATA_DIR"
 
 while true; do
     # get the current time

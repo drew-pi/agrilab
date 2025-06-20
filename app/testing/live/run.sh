@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -euo pipefail
 
 IMAGE_NAME=live-poc
 CONTAINER_NAME=live

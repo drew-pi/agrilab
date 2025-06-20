@@ -1,11 +1,19 @@
 #!/bin/bash
 
+set -euo pipefail
+
 source .env
 
 CAMERA_A=/dev/video0
 
 # other data
 FRAME_RATE=5
+
+echo "[INFO] Using framerate=$FRAME_RATE"
+echo "[INFO] Using camera source=$CAMERA_A"
+echo "[INFO] Using segment length=$SEGMENT_LEN"
+echo "[INFO] Using jetson ip=$JETSON_IP"
+
 
 echo "[INFO] beginning live cameraA feed"
 
