@@ -14,7 +14,7 @@ load_dotenv()
 # Configure logging globally
 logging.basicConfig(
     level=logging.INFO,
-    format="%(asctime)s %(levelname)s [%(name)s] %(message)s"
+    format="%(levelname)s [%(name)s] %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -46,6 +46,11 @@ def download_clip():
     filename = f"{start.strftime('%Y_%m_%d_T%H%M_A')}.mp4"
     RECORDINGS_PATH=os.getenv("RECORDINGS_PATH", "/recordings")
     input_path = os.path.join(RECORDINGS_PATH, filename)
+
+    # remove temporary file if it already exists
+    if os.path.exists(output_path):
+        os.remove(output_path)
+    
     output_path = "/tmp/clip.mp4"
 
     logging.info(f"Created file path: {input_path}")
@@ -61,6 +66,7 @@ def download_clip():
         "-i", input_path,
         "-t", str(duration),
         "-c", "copy",
+        "-y", # answer yes to any pop ups
         output_path
     ]
 

@@ -1,11 +1,15 @@
 FROM python:3.10-slim
 
-# Install nginx and RTMP module
-RUN apt-get update && \
-    apt-get install -y nginx libnginx-mod-rtmp ffmpeg && \
-    apt-get clean
+ENV DEBIAN_FRONTEND=noninteractive
 
-# install python libs
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        nginx \
+        libnginx-mod-rtmp \
+        ffmpeg \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
 COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 
