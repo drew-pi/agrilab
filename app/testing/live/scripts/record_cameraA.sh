@@ -13,7 +13,7 @@ echo "[INFO] Using data directory=$DATA_DIR"
 MIN_CUTOFF=$(( SEGMENT_LEN / 30 ))
 
 record_aligned_segments() {
-    echo "[INFO] Starting aligned segmentation loop at $(date)"
+    echo -e "\n[INFO] Starting aligned segmentation loop at $(date)\n"
     ffmpeg -rw_timeout 15000000 \
         -f flv -i "rtmp://$JETSON_IP/live/streamA live=1" \
         -c copy \
@@ -22,23 +22,24 @@ record_aligned_segments() {
         -reset_timestamps 1 \
         -strftime 1 \
         -movflags +faststart \
+        -loglevel warning \
         "$DATA_DIR/%Y_%m_%d_T%H%M_A.mp4"
 }
 
+# Added robust short recording because sometimes it fails to capture the live stream even if it exists and very inconsistent
 
 while true; do
     now=$(date +%s)
     TIME=$(( ((SEGMENT_LEN - now % SEGMENT_LEN) % SEGMENT_LEN) - 2 ))
 
-    # if less than 1/30 of segement length until boundry just sleep
+    # if less than 1/30 of segement length until boundary just sleep
     if [ "$TIME" -lt "$MIN_CUTOFF" ]; then
-        echo "[INFO] Only $TIME seconds left before boundry. Skipping short segment."
+        echo -e "\n[INFO] Only $TIME seconds left before boundary. Skipping short segment.\n"
         record_aligned_segments
         continue
-
     fi
 
-    echo "[INFO] Attempting short pre-alignment recording for $TIME seconds..."
+    echo -e "\n[INFO] Attempting short pre-alignment recording for $TIME seconds...\n"
 
     # short segment of $TIME instead of sleeping 
     if ffmpeg -rw_timeout 15000000 \
@@ -50,14 +51,13 @@ while true; do
 
         now=$(date +%s)
         WAIT_TIME=$(( (SEGMENT_LEN - now % SEGMENT_LEN) % SEGMENT_LEN ))
-        echo "[INFO] Short segment completed successfully. Proceeding to long term recorder in $WAIT_TIME seconds"
+        echo -e "\n[INFO] Short segment completed successfully. Proceeding to long term recorder in $WAIT_TIME seconds\n"
         sleep $WAIT_TIME
 
         record_aligned_segments
         continue
-        
     else
-        echo "[WARN] Short segment failed at $(date). Retrying in 5 seconds..."
+        echo -e "\n[WARN] Short segment failed at $(date). Retrying in 5 seconds...\n"
         sleep 5
     fi
 done
