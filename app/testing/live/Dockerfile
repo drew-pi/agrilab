@@ -4,9 +4,9 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        nginx \
-        libnginx-mod-rtmp \
-        ffmpeg \
+    nginx \
+    libnginx-mod-rtmp \
+    ffmpeg \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 

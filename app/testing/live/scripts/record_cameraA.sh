@@ -38,7 +38,7 @@ while true; do
     TIME=$(( ((SEGMENT_LEN - now % SEGMENT_LEN) % SEGMENT_LEN) - 2 ))
 
     # if less than 1/30 of segement length until boundary just sleep
-    if [ "$TIME" -lt "$MIN_CUTOFF" ]; then
+    if [ "$TIME" -ge 0 ] && [ "$TIME" -lt "$MIN_CUTOFF" ]; then
         echo -e "\n[INFO] Only $TIME seconds left before boundary. Skipping short segment.\n"
         record_aligned_segments
         continue

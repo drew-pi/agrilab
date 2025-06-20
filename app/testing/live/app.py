@@ -30,9 +30,16 @@ def list_recordings():
     files = sorted(os.listdir(RECORDINGS_PATH))
     return jsonify(files)
 
+@app.route("/clip-form")
+def clip_form():
+    return render_template("clip.html")
+
 
 @app.route("/clip")
 def download_clip():
+    """
+    API route that dispatches a ffmpeg worker to cut a video
+    """
     start_ts = request.args.get("start")  # e.g., 2025-06-20T13:00:00
     end_ts = request.args.get("end")      # e.g., 2025-06-20T13:01:30
 
@@ -46,12 +53,12 @@ def download_clip():
     filename = f"{start.strftime('%Y_%m_%d_T%H%M_A')}.mp4"
     RECORDINGS_PATH=os.getenv("RECORDINGS_PATH", "/recordings")
     input_path = os.path.join(RECORDINGS_PATH, filename)
+    output_path = "/tmp/clip.mp4"
 
     # remove temporary file if it already exists
     if os.path.exists(output_path):
         os.remove(output_path)
-    
-    output_path = "/tmp/clip.mp4"
+
 
     logging.info(f"Created file path: {input_path}")
 
