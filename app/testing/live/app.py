@@ -59,8 +59,6 @@ def download_clip():
     # start.replace(minute=0, second=0, microsecond=0)
 
     logging.info(f"Start time aligned to boundry is {start}")
-    logging.info(f"End time aligned to boundry is {start}")
-
 
     # make sure the end is after start
     if start > end:

@@ -53,18 +53,16 @@ while true; do
         -f flv -i "rtmp://$JETSON_IP/live/streamA live=1" \
         -c copy \
         -t "$TIME" \
-        -strftime 1 \
         -movflags +faststart \
         -y \
-        "$DATA_DIR/$FILE_FMT-A.mp4"; then
+        "$DATA_DIR/$(date +$FILE_FMT)-A.mp4"; then
 
         echo -e "\n[INFO] Short segment completed successfully. Proceeding to long term recorder\n"
 
         record_aligned_segments
         continue
     else
-        echo -e "\n[WARN] Short segment failed at $(date). Retrying in 5 seconds...\n"
-        sleep 5
+        echo -e "\n[WARN] Short segment failed at $(date). Retrying ...\n"
     fi
 done
 
