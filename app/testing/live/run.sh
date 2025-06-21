@@ -62,8 +62,10 @@ export DATA_DIR=_data
 mkdir -p $LOG_DIR
 mkdir -p $DATA_DIR
 
-# how long each .mp4 archive file is (in seconds)
-export SEGMENT_LEN=60
+# defines how the .mp4 files are formatted
+export FILE_FMT=%Y-%m-%dT%H:%M:00.000000
+# export FILE_FMT=%Y-%m-%dT%H # for when SEGMENT_LEN=3600
+
 
 echo "Starting camera feed"
 
