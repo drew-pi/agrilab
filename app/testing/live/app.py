@@ -50,6 +50,18 @@ def download_clip():
     start = datetime.fromisoformat(start_ts)
     end = datetime.fromisoformat(end_ts)
 
+    # used later for how long to record the concatenated video file
+    duration = (end - start).total_seconds()
+    start_offset = f"{start.strftime('00:00:%S')}"
+
+    start = start.replace(second=0, microsecond=0)
+
+    # start.replace(minute=0, second=0, microsecond=0)
+
+    logging.info(f"Start time aligned to boundry is {start}")
+    logging.info(f"End time aligned to boundry is {start}")
+
+
     # make sure the end is after start
     if start > end:
         return abort(404, description="Cannot have start clip time be ahead of the end clip time")
@@ -59,6 +71,9 @@ def download_clip():
 
     raw_clips = np.arange(start, end, np.timedelta64(SEGMENT_LEN, "s"))
     clip_full_file_names = [os.path.join(RECORDINGS_PATH, f"{_clip}-A.mp4") for _clip in raw_clips]
+
+    logging.info(f"Clips that are needed: {clip_full_file_names}")
+
     valid_clip_full_file_names = [f"file '{p}'" for p in clip_full_file_names if os.path.isfile(p)]
 
     logging.info(f"Missing {len(clip_full_file_names) - len(valid_clip_full_file_names)} clips")
@@ -86,11 +101,9 @@ def download_clip():
 
     logging.info(f"Concatenated {len(valid_clip_full_file_names)} existing clips into {full_clip_path}")
 
-    duration = (end - start).total_seconds()
-
     cmd = [
         "ffmpeg",
-        "-ss", f"{start.strftime('00:00:%S')}",
+        "-ss", start_offset,
         # "-ss", f"{start.strftime('00:%M:%S')}", # use when SEGMENT_LEN=3600 because also have to worry about minutes
         "-i", full_clip_path,
         "-t", str(duration),

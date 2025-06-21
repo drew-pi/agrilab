@@ -9,7 +9,7 @@ CONTAINER_NAME=live
 
 JETSON_IP=$(hostname -I | awk '{print $1}')
 echo "Current ip address is $JETSON_IP"
-echo "JETSON_IP=$JETSON_IP" > .env
+# echo "JETSON_IP=$JETSON_IP" > .env
 
 # check to see if already existing version
 if [ "$(sudo docker ps -aq -f name=$CONTAINER_NAME)" ]; then
@@ -63,7 +63,7 @@ mkdir -p $LOG_DIR
 mkdir -p $DATA_DIR
 
 # defines how the .mp4 files are formatted
-export FILE_FMT=%Y-%m-%dT%H:%M:00.000000
+export FILE_FMT='%Y-%m-%dT%H:%M:00.000000'
 # export FILE_FMT=%Y-%m-%dT%H # for when SEGMENT_LEN=3600
 
 

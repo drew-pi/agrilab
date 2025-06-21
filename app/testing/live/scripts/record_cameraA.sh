@@ -9,6 +9,8 @@ source .env
 echo "[INFO] Using segment length=$SEGMENT_LEN"
 echo "[INFO] Using jetson ip=$JETSON_IP"
 echo "[INFO] Using data directory=$DATA_DIR"
+echo "[INFO] Using file format=$FILE_FMT-A.mp4"
+
 
 MIN_CUTOFF=$(( SEGMENT_LEN / 30 ))
 
@@ -51,7 +53,9 @@ while true; do
         -f flv -i "rtmp://$JETSON_IP/live/streamA live=1" \
         -c copy \
         -t "$TIME" \
+        -strftime 1 \
         -movflags +faststart \
+        -y \
         "$DATA_DIR/$FILE_FMT-A.mp4"; then
 
         echo -e "\n[INFO] Short segment completed successfully. Proceeding to long term recorder\n"
