@@ -28,7 +28,7 @@ record_aligned_segments() {
         -strftime 1 \
         -movflags +faststart \
         -loglevel warning \
-        "$DATA_DIR/%Y_%m_%d_T%H%M_A.mp4"
+        "$DATA_DIR/$FILE_FMT-A.mp4"
 }
 
 # Added robust short recording because sometimes it fails to capture the live stream even if it exists and very inconsistent
@@ -52,7 +52,7 @@ while true; do
         -c copy \
         -t "$TIME" \
         -movflags +faststart \
-        "$DATA_DIR/$(date +%Y_%m_%d_T%H%M)_A.mp4"; then
+        "$DATA_DIR/$FILE_FMT-A.mp4"; then
 
         echo -e "\n[INFO] Short segment completed successfully. Proceeding to long term recorder\n"
 

@@ -50,36 +50,57 @@ def download_clip():
     start = datetime.fromisoformat(start_ts)
     end = datetime.fromisoformat(end_ts)
 
-    # file names: 2025_06_20_T1635_A.mp4
-    filename = f"{start.strftime('%Y_%m_%d_T%H%M_A')}.mp4"
+    # make sure the end is after start
+    if start > end:
+        return abort(404, description="Cannot have start clip time be ahead of the end clip time")
+    
     RECORDINGS_PATH=os.getenv("RECORDINGS_PATH", "/recordings")
-    input_path = os.path.join(RECORDINGS_PATH, filename)
-    output_path = "/tmp/clip.mp4"
+    SEGMENT_LEN=int(os.getenv("SEGMENT_LEN", 3600))
 
-    # remove temporary file if it already exists
-    if os.path.exists(output_path):
-        os.remove(output_path)
+    raw_clips = np.arange(start, end, np.timedelta64(SEGMENT_LEN, "s"))
+    clip_full_file_names = [os.path.join(RECORDINGS_PATH, f"{_clip}-A.mp4") for _clip in raw_clips]
+    valid_clip_full_file_names = [f"file '{p}'" for p in clip_full_file_names if os.path.isfile(p)]
 
+    logging.info(f"Missing {len(clip_full_file_names) - len(valid_clip_full_file_names)} clips")
 
-    logging.info(f"Created file path: {input_path}")
+    valid_clip_files = "\n".join(valid_clip_full_file_names)
 
-    if not os.path.isfile(input_path):
-        return abort(404, description="Recording not found.")
+    clip_files_path = "/tmp/concat_list.txt"
+    full_clip_path = "/tmp/full_clip.mp4"
+    output_clipped_path = "/tmp/clip.mp4"
+
+    with open(clip_files_path, "w") as f:
+        f.write(valid_clip_files)
+
+    cmd = [
+        "ffmpeg",
+        "-f", "concat",
+        "-safe", "0",
+        "-i", clip_files_path,
+        "-c", "copy",
+        "-y",
+        full_clip_path
+    ]
+
+    subprocess.run(cmd, check=True)
+
+    logging.info(f"Concatenated {len(valid_clip_full_file_names)} existing clips into {full_clip_path}")
 
     duration = (end - start).total_seconds()
 
     cmd = [
         "ffmpeg",
         "-ss", f"{start.strftime('00:00:%S')}",
-        "-i", input_path,
+        # "-ss", f"{start.strftime('00:%M:%S')}", # use when SEGMENT_LEN=3600 because also have to worry about minutes
+        "-i", full_clip_path,
         "-t", str(duration),
         "-c", "copy",
         "-y", # answer yes to any pop ups
-        output_path
+        output_clipped_path
     ]
 
     subprocess.run(cmd, check=True)
-    return send_file(output_path, as_attachment=True)
+    return send_file(output_clipped_path, as_attachment=True)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
