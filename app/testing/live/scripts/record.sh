@@ -57,39 +57,6 @@ record_aligned_segments() {
 }
 
 # Added robust short recording because sometimes it fails to capture the live stream even if it exists and very inconsistent
-
-while true; do
-    now=$(date +%s)
-    TIME=$(( ((SEGMENT_LEN - now % SEGMENT_LEN) % SEGMENT_LEN) - 2 ))
-
-    # if less than 1/30 of segement length until boundary just sleep
-    if [ "$TIME" -ge 0 ] && [ "$TIME" -lt "$MIN_CUTOFF" ]; then
-        echo -e "\n[INFO] Only $TIME seconds left before boundary. Skipping short segment.\n"
-        record_aligned_segments
-        continue
-    fi
-
-    echo -e "\n[INFO] Attempting short pre-alignment recording for $TIME seconds...\n"
-
-    # short segment of $TIME instead of sleeping 
-    if ffmpeg -rw_timeout 15000000 \
-        -f flv -i "rtmp://$JETSON_IP/live/stream$CAMERA_ID live=1" \
-        -c copy \
-        -t "$TIME" \
-        -movflags +faststart \
-        -y \
-        "$SAVE_DIR/$(date +$FILE_FMT)-$CAMERA_ID.mp4"; then
-
-        echo -e "\n[INFO] Short segment completed successfully. Proceeding to long term recorder\n"
-
-        record_aligned_segments
-        continue
-    else
-        echo -e "\n[WARN] Short segment failed at $(date). Retrying in 1 second...\n"
-        sleep 1
-    fi
-done
-
 while true; do
     now=$(date +%s)
     TIME=$(( (SEGMENT_LEN - now % SEGMENT_LEN) % SEGMENT_LEN ))
