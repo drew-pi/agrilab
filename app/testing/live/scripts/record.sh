@@ -37,8 +37,8 @@ echo "[INFO] Saving files to $SAVE_DIR"
 MIN_CUTOFF=$(( SEGMENT_LEN / 30 ))
 
 record_aligned_segments() {
-    now=$(date +%s)
-    WAIT_TIME=$(( (SEGMENT_LEN - now % SEGMENT_LEN) % SEGMENT_LEN ))
+    # this is the precise wait time 
+    WAIT_TIME=$(awk -v now="$(date +%s.%N)" -v seg=60 'BEGIN { print seg - (now % seg) }')
     echo -e "\n[INFO] Starting aligned segmentation loop in $WAIT_TIME seconds\n"
     sleep $WAIT_TIME
 
@@ -61,7 +61,10 @@ record_aligned_segments() {
 }
 
 # Added robust short recording because sometimes it fails to capture the live stream even if it exists and very inconsistent
-while true; do
+while true; do 
+    # synchronize to next second
+    sleep $(awk "BEGIN {print 1 - ($(date +%s.%N) % 1)}")
+
     now=$(date +%s)
     TIME=$(( (SEGMENT_LEN - now % SEGMENT_LEN) % SEGMENT_LEN ))
 

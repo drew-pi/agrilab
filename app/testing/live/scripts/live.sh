@@ -31,7 +31,6 @@ echo "[INFO] Using camera $CAMERA_ID with source=$CAMERA"
 echo "[INFO] Using segment length=$SEGMENT_LEN"
 echo "[INFO] Using jetson ip=$JETSON_IP"
 
-
 echo "[INFO] beginning live camera$CAMERA_ID feed"
 
 ffmpeg -re -f v4l2 -fflags +discardcorrupt \
@@ -40,11 +39,10 @@ ffmpeg -re -f v4l2 -fflags +discardcorrupt \
     -i "$CAMERA" \
     -vf "format=yuv420p,drawtext=fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf:
        text='%{localtime}':x=10:y=10:fontsize=32:fontcolor=white:box=1:boxcolor=black@0.5" \
-    -c:v libx264 -preset ultrafast -tune zerolatency \
+    -c:v libx264 -preset medium -crf 24 -tune zerolatency \
     -g 1 -keyint_min 1 -sc_threshold 0 \
     -force_key_frames "expr:gte(t,n_forced*${SEGMENT_LEN})" \
-    -movflags +faststart \
-    -loglevel warning \
+    -movflags +faststart -an \
     -f flv rtmp://$JETSON_IP/live/stream$CAMERA_ID
 
 
