@@ -7,7 +7,7 @@
 set -euo pipefail
 trap 'echo "[ERROR] Command failed at line $LINENO: $BASH_COMMAND" >&2' ERR
 
-source .env
+source .env.local
 
 # check to see if only one argument passed in
 if [[ $# -ne 1 ]]; then
@@ -84,6 +84,38 @@ while true; do
 
         record_aligned_segments
         continue
+    else
+        echo -e "\n[WARN] Short segment failed at $(date). Retrying in 1 second...\n"
+        sleep 1
+    fi
+done
+
+while true; do
+    now=$(date +%s)
+    TIME=$(( (SEGMENT_LEN - now % SEGMENT_LEN) % SEGMENT_LEN ))
+
+    if (( TIME < 2 )); then
+        echo -e "\n[INFO] Less than 2s remaining until boundary. Restarting the loop\n"
+        sleep $TIME
+        continue
+    elif (( TIME < MIN_CUTOFF )); then
+        echo -e "\n[INFO] $TIME seconds left until boundary. Skipping short segment and starting aligned recorder.\n"
+        record_aligned_segments
+        continue
+    else
+        echo -e "\n[INFO] Attempting short pre-alignment recording for $TIME seconds...\n"
+    fi
+
+    if ffmpeg -rw_timeout 15000000 \
+        -f flv -i "rtmp://$JETSON_IP/live/stream$CAMERA_ID live=1" \
+        -c copy \
+        -t "$TIME" \
+        -movflags +faststart \
+        -y \
+        "$SAVE_DIR/$(date +$FILE_FMT)-$CAMERA_ID.mp4"; then
+
+        echo -e "\n[INFO] Short segment completed successfully. Proceeding to long term aligned recorder\n"
+        record_aligned_segments
     else
         echo -e "\n[WARN] Short segment failed at $(date). Retrying in 1 second...\n"
         sleep 1

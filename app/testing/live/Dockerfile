@@ -17,7 +17,7 @@ RUN pip install -r requirements.txt
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY app.py /app.py
 COPY templates/ /templates/
-COPY .env /.env
+COPY .env.local /.env
 
 # Create HLS output directory
 RUN mkdir -p /var/www/hls
