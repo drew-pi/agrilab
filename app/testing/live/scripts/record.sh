@@ -53,7 +53,7 @@ record_aligned_segments() {
         -strftime 1 \
         -movflags +faststart \
         -loglevel warning \
-        "$SAVE_DIR/$FILE_FMT-$CAMERA_ID.mp4"
+        "$SAVE_DIR/$FILE_FMT-$CAMERA_ID.mp4"; then
 
         echo -e "\n[WARN] Aligned segment failed at $(date). Restarting loop...\n"
         return 1
