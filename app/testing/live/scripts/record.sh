@@ -44,7 +44,7 @@ record_aligned_segments() {
 
     echo -e "\n[INFO] Starting aligned segmentation loop at $(date)\n"
 
-    ffmpeg -rw_timeout 15000000 \
+    if ! ffmpeg -rw_timeout 15000000 \
         -f flv -i "rtmp://$JETSON_IP/live/stream$CAMERA_ID live=1" \
         -c copy \
         -f segment \
@@ -54,6 +54,10 @@ record_aligned_segments() {
         -movflags +faststart \
         -loglevel warning \
         "$SAVE_DIR/$FILE_FMT-$CAMERA_ID.mp4"
+
+        echo -e "\n[WARN] Aligned segment failed at $(date). Restarting loop...\n"
+        return 1
+    fi
 }
 
 # Added robust short recording because sometimes it fails to capture the live stream even if it exists and very inconsistent

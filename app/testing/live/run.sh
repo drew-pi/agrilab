@@ -73,9 +73,9 @@ setsid bash scripts/live.sh /dev/video0 A > "$LOG_DIR/live_cameraA.log" 2>&1 &
 live_pid_A=$!
 echo "Started background live process A with pid $live_pid_A"
 
-# setsid bash scripts/live.sh /dev/video1 B > "$LOG_DIR/live_cameraB.log" 2>&1 &
-# live_pid_B=$!
-# echo "Started background live process B with pid $live_pid_B"
+setsid bash scripts/live.sh /dev/video1 B > "$LOG_DIR/live_cameraB.log" 2>&1 &
+live_pid_B=$!
+echo "Started background live process B with pid $live_pid_B"
 
 sleep 1
 
@@ -83,9 +83,9 @@ setsid bash scripts/record.sh A > $LOG_DIR/record_cameraA.log 2>&1 &
 rec_pid_A=$!
 echo "Started background recording process A with pid $rec_pid_A"
 
-# setsid bash scripts/record.sh B > $LOG_DIR/record_cameraB.log 2>&1 &
-# rec_pid_B=$!
-# echo "Started background recording process B with pid $rec_pid_B"
+setsid bash scripts/record.sh B > $LOG_DIR/record_cameraB.log 2>&1 &
+rec_pid_B=$!
+echo "Started background recording process B with pid $rec_pid_B"
 
 
 
