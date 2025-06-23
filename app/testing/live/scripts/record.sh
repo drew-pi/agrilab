@@ -1,16 +1,38 @@
 #!/bin/bash
 
-set -u
+## Usage
+# bash scripts/record.sh [A|B]
+## 
 
+set -euo pipefail
 trap 'echo "[ERROR] Command failed at line $LINENO: $BASH_COMMAND" >&2' ERR
 
 source .env
 
+# check to see if only one argument passed in
+if [[ $# -ne 1 ]]; then
+    echo "[ERROR] Invalid input, found $# parameters."
+    exit 1
+fi
+
+if [[ "$1" =~ ^[AB]$ ]]; then
+    CAMERA_ID="$1"
+else
+    echo "[ERROR] Invalid camera ID. Used ID $1 instead"
+    exit 1
+fi
+
+echo "[INFO] Recording camera $CAMERA_ID stream"
 echo "[INFO] Using segment length=$SEGMENT_LEN"
 echo "[INFO] Using jetson ip=$JETSON_IP"
 echo "[INFO] Using data directory=$DATA_DIR"
-echo "[INFO] Using file format=$FILE_FMT-A.mp4"
+echo "[INFO] Using file format=$FILE_FMT-$CAMERA_ID.mp4"
 
+SAVE_DIR=$DATA_DIR
+# making sure that the directory exists
+mkdir -p $SAVE_DIR
+
+echo "[INFO] Saving files to $SAVE_DIR"
 
 MIN_CUTOFF=$(( SEGMENT_LEN / 30 ))
 
@@ -21,8 +43,9 @@ record_aligned_segments() {
     sleep $WAIT_TIME
 
     echo -e "\n[INFO] Starting aligned segmentation loop at $(date)\n"
+
     ffmpeg -rw_timeout 15000000 \
-        -f flv -i "rtmp://$JETSON_IP/live/streamA live=1" \
+        -f flv -i "rtmp://$JETSON_IP/live/stream$CAMERA_ID live=1" \
         -c copy \
         -f segment \
         -segment_time "$SEGMENT_LEN" \
@@ -30,7 +53,7 @@ record_aligned_segments() {
         -strftime 1 \
         -movflags +faststart \
         -loglevel warning \
-        "$DATA_DIR/$FILE_FMT-A.mp4"
+        "$SAVE_DIR/$FILE_FMT-$CAMERA_ID.mp4"
 }
 
 # Added robust short recording because sometimes it fails to capture the live stream even if it exists and very inconsistent
@@ -50,19 +73,20 @@ while true; do
 
     # short segment of $TIME instead of sleeping 
     if ffmpeg -rw_timeout 15000000 \
-        -f flv -i "rtmp://$JETSON_IP/live/streamA live=1" \
+        -f flv -i "rtmp://$JETSON_IP/live/stream$CAMERA_ID live=1" \
         -c copy \
         -t "$TIME" \
         -movflags +faststart \
         -y \
-        "$DATA_DIR/$(date +$FILE_FMT)-A.mp4"; then
+        "$SAVE_DIR/$(date +$FILE_FMT)-$CAMERA_ID.mp4"; then
 
         echo -e "\n[INFO] Short segment completed successfully. Proceeding to long term recorder\n"
 
         record_aligned_segments
         continue
     else
-        echo -e "\n[WARN] Short segment failed at $(date). Retrying ...\n"
+        echo -e "\n[WARN] Short segment failed at $(date). Retrying in 1 second...\n"
+        sleep 1
     fi
 done
 

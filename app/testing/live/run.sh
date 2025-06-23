@@ -51,7 +51,7 @@ sudo docker run --rm -d --name $CONTAINER_NAME --network host \
     $IMAGE_NAME
 
 echo "Waiting for $CONTAINER_NAME to start"
-sleep 5
+sleep 3
 
 sudo docker logs -n 30 -t $CONTAINER_NAME
 
@@ -67,17 +67,26 @@ export FILE_FMT='%Y-%m-%dT%H:%M:00.000000'
 # export FILE_FMT=%Y-%m-%dT%H # for when SEGMENT_LEN=3600
 
 
-echo "Starting camera feed"
+echo "Starting camera feed and recording"
 
-setsid bash scripts/live_cameraA.sh > "$LOG_DIR/live_cameraA.log" 2>&1 &
-live_pid=$!
-echo "Started background live process A with pid $live_pid"
+setsid bash scripts/live.sh /dev/video0 A > "$LOG_DIR/live_cameraA.log" 2>&1 &
+live_pid_A=$!
+echo "Started background live process A with pid $live_pid_A"
+
+# setsid bash scripts/live.sh /dev/video1 B > "$LOG_DIR/live_cameraB.log" 2>&1 &
+# live_pid_B=$!
+# echo "Started background live process B with pid $live_pid_B"
 
 sleep 1
 
-setsid bash scripts/record_cameraA.sh > $LOG_DIR/record_cameraA.log 2>&1 &
-rec_pid=$!
-echo "Started background recording process A with pid $rec_pid"
+setsid bash scripts/record.sh A > $LOG_DIR/record_cameraA.log 2>&1 &
+rec_pid_A=$!
+echo "Started background recording process A with pid $rec_pid_A"
+
+# setsid bash scripts/record.sh B > $LOG_DIR/record_cameraB.log 2>&1 &
+# rec_pid_B=$!
+# echo "Started background recording process B with pid $rec_pid_B"
+
 
 
 
