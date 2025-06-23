@@ -82,9 +82,11 @@ def download_clip():
 
     valid_clip_files = "\n".join(valid_clip_full_file_names)
 
-    clip_files_path = f"/tmp/concat_list-{"A"}-{start.isoformat()}.txt"
-    full_clip_path = f"/tmp/full_clip-{"A"}-{start.isoformat()}.mp4"
-    output_clipped_path = f"/tmp/clip-{"A"}-{start.isoformat()}.mp4"
+    camera="A"
+
+    clip_files_path = f"/tmp/concat_list-{camera}-{start.isoformat()}.txt"
+    full_clip_path = f"/tmp/full_clip-{camera}-{start.isoformat()}.mp4"
+    output_clipped_path = f"/tmp/clip-{camera}-{start.isoformat()}.mp4"
 
     with open(clip_files_path, "w") as f:
         f.write(valid_clip_files)
