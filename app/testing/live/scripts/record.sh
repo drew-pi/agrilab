@@ -56,7 +56,7 @@ record_aligned_segments() {
         "$SAVE_DIR/$FILE_FMT-$CAMERA_ID.mp4"; then
 
         echo -e "\n[WARN] Aligned segment failed at $(date). Restarting loop...\n"
-        return 1
+        return 0 # return 0 so don't trigger the trap
     fi
 }
 
