@@ -22,5 +22,25 @@
       ><br />
       <input type="submit" value="Download Clip" />
     </form>
+
+    <h1>Get a frame</h1>
+    <form action="/frame" method="get">
+      <label
+        >Start Time (ISO):
+        <select name="camera">
+          <option value="A">A</option>
+          <option value="B">B</option>
+        </select></label
+      ><br />
+      <label
+        >Timestamp:
+        <input
+          type="datetime-local"
+          name="ts"
+          step="1"
+          placeholder="2025-06-20T14:30:30" /></label
+      ><br />
+      <input type="submit" value="Get Frame" />
+    </form>
   </body>
 </html>

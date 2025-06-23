@@ -62,8 +62,8 @@ while true; do
     TIME=$(( (SEGMENT_LEN - now % SEGMENT_LEN) % SEGMENT_LEN ))
 
     if (( TIME <= 2 )); then
-        echo -e "\n[INFO] Less than 2s remaining until boundary. Restarting the loop\n"
-        sleep $TIME
+        echo -e "\n[INFO] Less than 3s remaining until boundary. Restarting the loop\n"
+        sleep "$(( TIME > 0 ? TIME : 2 ))"
         continue
     elif (( TIME < MIN_CUTOFF )); then
         echo -e "\n[INFO] $TIME seconds left until boundary. Skipping short segment and starting aligned recorder.\n"

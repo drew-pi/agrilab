@@ -20,6 +20,10 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+def clear_tmp():
+    subprocess.run("rm -rf /tmp/*.jpg /tmp/*.mp4 /tmp/*.txt", shell=True, check=True)
+
+
 @app.route("/")
 def index():
     JETSON_IP=os.getenv("JETSON_IP")
@@ -78,9 +82,9 @@ def download_clip():
 
     valid_clip_files = "\n".join(valid_clip_full_file_names)
 
-    clip_files_path = "/tmp/concat_list.txt"
-    full_clip_path = "/tmp/full_clip.mp4"
-    output_clipped_path = "/tmp/clip.mp4"
+    clip_files_path = f"/tmp/concat_list-{"A"}-{start.isoformat()}.txt"
+    full_clip_path = f"/tmp/full_clip-{"A"}-{start.isoformat()}.mp4"
+    output_clipped_path = f"/tmp/clip-{"A"}-{start.isoformat()}.mp4"
 
     with open(clip_files_path, "w") as f:
         f.write(valid_clip_files)
@@ -112,6 +116,37 @@ def download_clip():
 
     subprocess.run(cmd, check=True)
     return send_file(output_clipped_path, as_attachment=True)
+
+
+@app.route("/frame")
+def frame():
+    ts = datetime.fromisoformat(request.args.get("ts"))   
+    camera  = request.args.get("camera", "A")  # default to camera A
+    
+    RECORDINGS_PATH=os.getenv("RECORDINGS_PATH", "/recordings")
+
+    FILE_FMT='%Y-%m-%dT%H:%M:00.000000'
+
+    path = os.path.join(RECORDINGS_PATH, f"{ts.strftime(FILE_FMT)}-{camera}.mp4")
+
+    if not os.path.isfile(path):
+        abort(404, "Segment not found")
+
+    output_frame_path = f"/tmp/frame-{camera}-{ts.isoformat()}.jpg"
+
+    cmd  = [
+        "ffmpeg", 
+        "-ss", f"{ts.strftime('00:00:%S')}",
+        # "-ss", f"{start.strftime('00:%M:%S')}", # use when SEGMENT_LEN=3600 because also have to worry about minutes
+        "-i", str(path),
+        "-frames:v", "1", 
+        "-q:v", "2", 
+        "-y", 
+        output_frame_path
+    ]
+    
+    subprocess.run(cmd, check=True)
+    return send_file(output_frame_path, mimetype="image/jpeg")
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
