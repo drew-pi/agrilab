@@ -115,7 +115,7 @@ def download_clip():
     ]
 
     subprocess.run(cmd, check=True)
-    return send_file(output_clipped_path, as_attachment=True)
+    return send_file(output_clipped_path, mimetype="video/mp4", as_attachment=True)
 
 
 @app.route("/frame")
@@ -146,7 +146,7 @@ def frame():
     ]
     
     subprocess.run(cmd, check=True)
-    return send_file(output_frame_path, mimetype="image/jpeg")
+    return send_file(output_frame_path, mimetype="image/jpeg", as_attachment=True)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
