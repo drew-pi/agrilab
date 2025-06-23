@@ -61,7 +61,7 @@ while true; do
     now=$(date +%s)
     TIME=$(( (SEGMENT_LEN - now % SEGMENT_LEN) % SEGMENT_LEN ))
 
-    if (( TIME < 2 )); then
+    if (( TIME <= 2 )); then
         echo -e "\n[INFO] Less than 2s remaining until boundary. Restarting the loop\n"
         sleep $TIME
         continue
@@ -76,13 +76,14 @@ while true; do
     if ffmpeg -rw_timeout 15000000 \
         -f flv -i "rtmp://$JETSON_IP/live/stream$CAMERA_ID live=1" \
         -c copy \
-        -t "$TIME" \
+        -t "$(( TIME - 2 ))" \
         -movflags +faststart \
         -y \
         "$SAVE_DIR/$(date +$FILE_FMT)-$CAMERA_ID.mp4"; then
 
         echo -e "\n[INFO] Short segment completed successfully. Proceeding to long term aligned recorder\n"
         record_aligned_segments
+        continue
     else
         echo -e "\n[WARN] Short segment failed at $(date). Retrying in 1 second...\n"
         sleep 1
