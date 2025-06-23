@@ -27,7 +27,7 @@ def clear_tmp():
 @app.route("/")
 def index():
     JETSON_IP=os.getenv("JETSON_IP")
-    return render_template("viewer.html", hls_url=f"http://{JETSON_IP}:8080/hls/streamA.m3u8")
+    return render_template("viewer.html", ip=JETSON_IP)
 
 @app.route("/recordings")
 def list_recordings():
@@ -45,6 +45,7 @@ def download_clip():
     """
     API route that dispatches a ffmpeg worker to cut a video
     """
+
     start_ts = request.args.get("start")  # e.g., 2025-06-20T13:00:00
     end_ts = request.args.get("end")      # e.g., 2025-06-20T13:01:30
 
@@ -122,6 +123,10 @@ def download_clip():
 
 @app.route("/frame")
 def frame():
+    """
+    API route that dispatches a ffmpeg worker to get the specified frame
+    """
+
     ts = datetime.fromisoformat(request.args.get("ts"))   
     camera  = request.args.get("camera", "A")  # default to camera A
     

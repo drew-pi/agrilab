@@ -5,38 +5,43 @@
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   </head>
   <body>
-    <h2>Live HLS Stream</h2>
-    <video id="video" width="640" height="360" controls autoplay>
+    {% for camera in ["A", "B"] %}
+
+    <h2>Live HLS Stream for camera {{ camera }}</h2>
+    <video id="{{ camera }}" width="640" height="360" controls autoplay>
       Your browser does not support video.
     </video>
 
-    <a href="/clip-form">Download a clip</a>
-
     <script>
-      const video = document.getElementById("video");
-      const src = "{{ hls_url }}";
-
-      if (Hls.isSupported()) {
-        const hls = new Hls({ lowLatencyMode: true });
-        hls.loadSource(src);
-        hls.attachMedia(video);
-        hls.startLevel = -1;
-        hls.on(Hls.Events.MANIFEST_PARSED, function () {
-          video.play().catch((err) => {
-            console.warn("Autoplay failed:", err);
+      (function (id, src) {
+        const video = document.getElementById(id);
+        if (Hls.isSupported()) {
+          const hls = new Hls({ lowLatencyMode: true });
+          hls.loadSource(src);
+          hls.attachMedia(video);
+          hls.startLevel = -1;
+          hls.on(Hls.Events.MANIFEST_PARSED, function () {
+            video.play().catch((err) => {
+              console.warn("Autoplay failed:", err);
+            });
           });
-        });
-      } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
-        // Safari fallback
-        video.src = src;
-        video.addEventListener("loadedmetadata", function () {
-          video.play().catch((err) => {
-            console.warn("Autoplay failed:", err);
+        } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+          // Safari fallback
+          video.src = src;
+          video.addEventListener("loadedmetadata", function () {
+            video.play().catch((err) => {
+              console.warn("Autoplay failed:", err);
+            });
           });
-        });
-      } else {
-        console.error("This browser does not support HLS playback.");
-      }
+        } else {
+          console.error("This browser does not support HLS playback.");
+        }
+        // end inline function
+      })("{{ camera }}", "http://{{ ip }}:8080/hls/stream{{ camera }}.m3u8");
     </script>
+
+    {% endfor %}
+
+    <a href="/clip-form">Download a clip</a>;
   </body>
 </html>
