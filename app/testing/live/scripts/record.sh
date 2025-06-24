@@ -37,12 +37,19 @@ echo "[INFO] Saving files to $SAVE_DIR"
 MIN_CUTOFF=$(( SEGMENT_LEN / 30 ))
 
 record_aligned_segments() {
-    # this is the precise wait time 
-    WAIT_TIME=$(awk -v now="$(date +%s.%N)" -v seg=60 'BEGIN { print seg - (now % seg) }')
-    echo -e "\n[INFO] Starting aligned segmentation loop in $WAIT_TIME seconds\n"
-    sleep $WAIT_TIME
+    # traditional wait
+    # WAIT_TIME=$(( SEGMENT_LEN - $(date +%s) % SEGMENT_LEN ))
 
-    echo -e "\n[INFO] Starting aligned segmentation loop at $(date)\n"
+    PRECISE_WAIT=$(awk -v seg="$SEGMENT_LEN" -v now="$(date +%s.%N)" '
+    BEGIN {
+        rem = now - int(now / seg) * seg;
+        wait = seg - rem;
+        printf "%.6f\n", wait;
+    }')
+    echo -e "\n[INFO] Starting aligned segmentation loop in $PRECISE_WAIT seconds\n"
+    sleep $PRECISE_WAIT
+
+    echo -e "\n[INFO] Starting aligned segmentation loop at $(date +%T.%5N)\n"
 
     if ! ffmpeg -rw_timeout 15000000 \
         -f flv -i "rtmp://$JETSON_IP/live/stream$CAMERA_ID live=1" \
@@ -73,11 +80,11 @@ while true; do
         sleep "$(( TIME > 0 ? TIME : 2 ))"
         continue
     elif (( TIME < MIN_CUTOFF )); then
-        echo -e "\n[INFO] $TIME seconds left until boundary. Skipping short segment and starting aligned recorder.\n"
+        echo -e "\n[INFO] $TIME seconds left until boundary. Skipping short segment and going to aligned recorder.\n"
         record_aligned_segments
         continue
     else
-        echo -e "\n[INFO] Attempting short pre-alignment recording for $TIME seconds...\n"
+        echo -e "\n[INFO] Attempting short pre-alignment recording for $(( TIME - 2 )) seconds...\n"
     fi
 
     if ffmpeg -rw_timeout 15000000 \
@@ -88,7 +95,7 @@ while true; do
         -y \
         "$SAVE_DIR/$(date +$FILE_FMT)-$CAMERA_ID.mp4"; then
 
-        echo -e "\n[INFO] Short segment completed successfully. Proceeding to long term aligned recorder\n"
+        echo -e "\n[INFO] Short segment completed successfully at $(date). Proceeding to long term aligned recorder\n"
         record_aligned_segments
         continue
     else
