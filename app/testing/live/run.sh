@@ -1,15 +1,12 @@
 #!/bin/bash
 
 set -euo pipefail
-
 trap 'echo "[ERROR] Command failed at line $LINENO: $BASH_COMMAND" >&2' ERR
 
-IMAGE_NAME=live-poc
-CONTAINER_NAME=live
+source .env.local
 
-JETSON_IP=$(hostname -I | awk '{print $1}')
-echo "Current ip address is $JETSON_IP"
-# echo "JETSON_IP=$JETSON_IP" > .env
+echo "Current ip address is $(hostname -I | awk '{print $1}')"
+echo "Using address $JETSON_IP"
 
 # check to see if already existing version
 if [ "$(sudo docker ps -aq -f name=$CONTAINER_NAME)" ]; then
@@ -57,15 +54,8 @@ sudo docker logs -n 30 -t $CONTAINER_NAME
 
 sleep 1
 
-LOG_DIR=_logs
-export DATA_DIR=_data
 mkdir -p $LOG_DIR
 mkdir -p $DATA_DIR
-
-# defines how the .mp4 files are formatted
-export FILE_FMT='%Y-%m-%dT%H:%M:00.000000'
-# export FILE_FMT=%Y-%m-%dT%H # for when SEGMENT_LEN=3600
-
 
 echo "Starting camera feed and recording"
 

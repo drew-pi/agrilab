@@ -23,9 +23,6 @@ else
     exit 1
 fi
 
-# other data
-FRAME_RATE=5
-
 echo "[INFO] Using framerate=$FRAME_RATE"
 echo "[INFO] Using camera $CAMERA_ID with source=$CAMERA"
 echo "[INFO] Using segment length=$SEGMENT_LEN"
