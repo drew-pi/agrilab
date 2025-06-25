@@ -93,6 +93,7 @@ while true; do
         -t "$(( TIME - 2 ))" \
         -movflags +faststart \
         -y \
+        -loglevel warning \
         "$SAVE_DIR/$(date +$FILE_FMT)-$CAMERA_ID.mp4"; then
 
         echo -e "\n[INFO] Short segment completed successfully at $(date). Proceeding to long term aligned recorder\n"
